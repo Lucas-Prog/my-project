@@ -13,7 +13,7 @@ const obj = {
   date: '25/10/2023'
 };
 const Insert = ()=> {
-  Pecas.INSERT(obj)
+  Pecas.Insert(obj)
   .then(response => console.log(`response: ${response}`))
   .catch(err => console.log(`err: ${JSON.stringify(err.message)}`));
 }
@@ -72,8 +72,8 @@ export default function TabOneScreen() {
                 <DataTable.Row key={item.rowid}>
                   <DataTable.Cell textStyle={[styles.text, {fontWeight: "bold"}]}>{item.rowid}</DataTable.Cell>
                   <DataTable.Cell textStyle={styles.text}>{item.product}</DataTable.Cell>
-                  <DataTable.Cell textStyle={styles.text}>{item.type}</DataTable.Cell>
-                  <DataTable.Cell textStyle={styles.text}>{item.prov}</DataTable.Cell>
+                  <DataTable.Cell textStyle={styles.text}>{item.type === "0" ? "Inf" : "Sup"}</DataTable.Cell>
+                  <DataTable.Cell textStyle={styles.text}>{item.prov === "0" ? "Não" : "Sim"}</DataTable.Cell>
                   <DataTable.Cell textStyle={styles.text}>{item.qtd}</DataTable.Cell>
                   <DataTable.Cell textStyle={styles.text}>{item.date}</DataTable.Cell>
                 </DataTable.Row>

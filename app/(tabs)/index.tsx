@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, {useState, useEffect} from 'react';
 import { StyleSheet } from 'react-native';
 import { DataTable } from 'react-native-paper';
 
@@ -8,6 +8,8 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Link, Tabs } from 'expo-router';
 import { Pressable, useColorScheme } from 'react-native';
 import Colors from '../../constants/Colors';
+
+import * as Pecas from '../DB/Pecas';
 
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>['name'];
@@ -19,7 +21,22 @@ function TabBarIcon(props: {
 
 export default function TabTwoScreen() {
   const colorScheme = useColorScheme();
+  const [monthJobs, setMonthJobs] = useState();
+  const [lastJob, setLastJob] = useState(
+    {
+      rowid: 0,
+      product: " ",
+      type: " ",
+      prov: " ",
+      qtd: " ",
+      date: " " 
+    }
+  );
 
+  useEffect(()=>{
+    Pecas.CountMonthJobs.then(res => setMonthJobs(res), error => console.log(error))
+    Pecas.GetLastJob.then(res => setLastJob(res), error => console.log(error))
+  },[monthJobs, lastJob]);
 
   return (
     <View style={styles.container}>
@@ -56,10 +73,28 @@ export default function TabTwoScreen() {
             <Text>Visualizar Trabalhos</Text>
           </View>
         </View>
+
+        <View style={styles.row}>
+          <View style={styles.item}>
+            <Link href="/ServiceList" asChild>
+                  <Pressable>
+                    {({ pressed }) => (
+                      <MaterialIcons 
+                      name="file-download" 
+                      size={100} 
+                      color={Colors[colorScheme ?? 'light'].text}
+                      style={{ opacity: pressed ? 0.5 : 1 }}
+                      />
+                    )}
+                  </Pressable>
+                </Link>
+              <Text>Gerar Relatório Mensal</Text>
+          </View>
+        </View>
       </View>
       <View style={styles.footer}>
-        <Text>Trabalhos Realizados este Mês: </Text>
-        <Text>Ultimo Trabalho Realizado:</Text>
+        <Text>Trabalhos Realizados este Mês: {monthJobs} </Text>
+        <Text>Ultimo Trabalho Realizado: {lastJob.product} - {lastJob.date}</Text>
       </View>
       {/* <View style={styles.row}>
         <View style={styles.item}>

@@ -2,44 +2,67 @@ import React, { useState } from 'react';
 import { Platform, StyleSheet, SafeAreaView} from 'react-native';
 import { TextInput } from 'react-native-paper';
 import { useForm, Controller} from 'react-hook-form'
-import { Select, CheckIcon, NativeBaseProvider, Switch, HStack, Button, Divider} from 'native-base';
+import { Select, Alert, CheckIcon, NativeBaseProvider, Switch, HStack, Button, Divider, Collapse} from 'native-base';
 
 import { Text, View } from '../../components/Themed';
 import { background } from 'native-base/lib/typescript/theme/styled-system';
 import * as Pecas from '../DB/Pecas';
 
 export default function ModalScreen() {
-    const {
-        control,
-        handleSubmit,
-        formState: { errors },
-      } = useForm({
-        defaultValues: {
-          firstName: "",
-          lastName: "",
-        },
-      });
-      const onSubmit = (data: any) => console.log(data)
-      const [service, setService] = useState("");
-      const [quantidede, setQuantidade] = useState("");
-      const [provisoria, setProvisoria] = useState(true);
-      const [supInf, setSupInf] = useState(true); 
-      const [teste, setTeste] = useState({});
+  const {
+      control,
+      handleSubmit,
+      formState: { errors },
+    } = useForm({
+      defaultValues: {
+        firstName: "",
+        lastName: "",
+      },
+  });
+  const onSubmit = (data: any) => console.log(data);
+  const [service, setService] = useState("");
+  const [quantidede, setQuantidade] = useState("");
+  const [provisoria, setProvisoria] = useState(true);
+  const [supInf, setSupInf] = useState(true); 
+  const [teste, setTeste] = useState({});
 
-      const formatDate = () =>{
-        let date = new Date();
-        return `${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`
+  const [showSpam, setShowSpam] = useState(false);
+  const [spamStatus, setSpamStatus] = useState(false);
+
+  const formatDate = () =>{
+    let date = new Date();
+    return `${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`
+  }
+
+  const pushDB = () =>{
+      let obj = {
+        product: service,
+        type: supInf,
+        prov: provisoria,
+        qtd: quantidede,
+        date: formatDate()
       }
-    const pushDB = () =>{
-        let obj = {
-          product: service,
-          type: supInf,
-          prov: provisoria,
-          qtd: quantidede,
-          date: formatDate()
-        }
-      Pecas.INSERT(obj);
-    }
+    Pecas.Insert(obj).then(res => {
+      console.log(`res: ${res}`);
+      // setShowSpam(true);
+      // setSpamStatus(true);
+      alert("Sucesso");
+    }).catch(errors => {
+      console.log(`err: ${errors}`);
+      // setShowSpam(true);
+      // setSpamStatus(false);
+      alert("Erro");
+
+    });
+  }
+
+    const statusAlert = [{
+      status: "success",
+      title: "Trabalho adicionado com sucesso !"
+    },{
+      status: "error",
+      title: "Erro ao adicionar o trabalho !"
+    }];
 
   return (
     <NativeBaseProvider>
@@ -56,7 +79,7 @@ export default function ModalScreen() {
         </ Select>
 
         <HStack alignItems="center" space={4}>
-          <Text>Deifinitiva</Text>
+          <Text>Definitiva</Text>
           <Switch size="md" isChecked={provisoria} onToggle={setProvisoria} onTrackColor={'trueGray.300'}/>
           <Text>Provisória</Text>
         </HStack> 
@@ -87,9 +110,19 @@ export default function ModalScreen() {
 
         <HStack space={5}>
           <Button colorScheme="primary" onPress={pushDB}>Confirmar</Button>
-          <Button colorScheme="secondary" onPress={() => { setProvisoria(false); setQuantidade(""); setService(""); setSupInf(false)}}>Cancelar</Button>
+          <Button colorScheme="secondary" onPress={() => { setProvisoria(false); setQuantidade(""); setService(""); setSupInf(false); setShowSpam(false);}}>Cancelar</Button>
         </HStack>
 
+
+        
+        <Collapse isOpen={showSpam} safeAreaBottom>
+          <HStack alignItems="center" safeAreaBottom w="95%" alignSelf="center">
+              <Alert w="100%" status={spamStatus == true ? statusAlert[0].status : statusAlert[1].status}> 
+                <Alert.Icon mt="1"/>
+                <Text>{spamStatus == true ? statusAlert[0].title : statusAlert[1].title}</Text>
+              </Alert>
+          </HStack>
+        </Collapse>
 
           {/* <Controller
               control={control}
