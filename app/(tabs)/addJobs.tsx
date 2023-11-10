@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback} from 'react';
 import { Platform, StyleSheet, SafeAreaView} from 'react-native';
 import { TextInput } from 'react-native-paper';
 import { useForm, Controller} from 'react-hook-form'
 import { Select, Alert, CheckIcon, NativeBaseProvider, Switch, HStack, Button, Divider, Collapse} from 'native-base';
 
 import { Text, View } from '../../components/Themed';
-import { background } from 'native-base/lib/typescript/theme/styled-system';
 import * as Pecas from '../DB/Pecas';
+import TabOneScreen from './ServiceList';
 
 export default function ModalScreen() {
   const {
@@ -22,8 +22,8 @@ export default function ModalScreen() {
   const onSubmit = (data: any) => console.log(data);
   const [service, setService] = useState("");
   const [quantidede, setQuantidade] = useState("");
-  const [provisoria, setProvisoria] = useState(true);
-  const [supInf, setSupInf] = useState(true); 
+  const [provisoria, setProvisoria] = useState(false);
+  const [supInf, setSupInf] = useState(false); 
   const [teste, setTeste] = useState({});
 
   const [showSpam, setShowSpam] = useState(false);
@@ -44,14 +44,14 @@ export default function ModalScreen() {
       }
     Pecas.Insert(obj).then(res => {
       console.log(`res: ${res}`);
-      // setShowSpam(true);
-      // setSpamStatus(true);
-      alert("Sucesso");
+      setShowSpam(true);
+      setSpamStatus(true);
+      // alert("Sucesso");
     }).catch(errors => {
       console.log(`err: ${errors}`);
-      // setShowSpam(true);
-      // setSpamStatus(false);
-      alert("Erro");
+      setShowSpam(true);
+      setSpamStatus(false);
+      // alert("Erro");
 
     });
   }
@@ -65,16 +65,16 @@ export default function ModalScreen() {
     }];
 
   return (
-    <NativeBaseProvider>
+    // <NativeBaseProvider>
       <View style={styles.container}>
         <Text>Tipo de Protese:</Text>
         <Select selectedValue={service} minWidth="250" accessibilityLabel="Tipo de Protese" placeholder="Tipo de Protese" 
         _selectedItem={{bg: "cyan.600", endIcon: <CheckIcon size="5" />
         }} mt={1} onValueChange={itemValue => setService(itemValue)} variant='filled'>
-            <Select.Item label="Protocolo" value="Protocolo" />
-            <Select.Item label="Protese Total" value="Protese Total" />
+            <Select.Item label="Protese Total" value="PT" />
             <Select.Item label="PPR" value="PPR" />
-            <Select.Item label="Ponte Movel" value="Ponte Movel" />
+            <Select.Item label="Ponte Movel" value="PM" />
+            <Select.Item label="Protocolo" value="Protocolo" />
             <Select.Item label="Adesiva" value="Adesiva" />
         </ Select>
 
@@ -145,7 +145,9 @@ export default function ModalScreen() {
 
 
       </View>
-    </NativeBaseProvider>
+
+    //</NativeBaseProvider>
+    
   );
 }
 

@@ -1,11 +1,11 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import { StyleSheet } from 'react-native';
 import { DataTable } from 'react-native-paper';
 
 import { Text, View } from '../../components/Themed';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { MaterialIcons } from '@expo/vector-icons';
-import { Link, Tabs } from 'expo-router';
+import { Link, Tabs, useFocusEffect } from 'expo-router';
 import { Pressable, useColorScheme } from 'react-native';
 import Colors from '../../constants/Colors';
 
@@ -20,6 +20,13 @@ function TabBarIcon(props: {
 
 
 export default function TabTwoScreen() {
+  useFocusEffect(useCallback(
+    ()=>{
+      Pecas.CountMonthJobs().then(res => setMonthJobs(res), error => console.log(error))
+      Pecas.GetLastJob().then(res => setLastJob(res), error => console.log(error))
+    },[]
+  ));
+
   const colorScheme = useColorScheme();
   const [monthJobs, setMonthJobs] = useState();
   const [lastJob, setLastJob] = useState(
@@ -32,11 +39,6 @@ export default function TabTwoScreen() {
       date: " " 
     }
   );
-
-  useEffect(()=>{
-    Pecas.CountMonthJobs.then(res => setMonthJobs(res), error => console.log(error))
-    Pecas.GetLastJob.then(res => setLastJob(res), error => console.log(error))
-  },[monthJobs, lastJob]);
 
   return (
     <View style={styles.container}>
@@ -58,7 +60,7 @@ export default function TabTwoScreen() {
             <Text>Adicionar um trabalho</Text>
           </View>
           <View style={styles.item}>
-          <Link href="/ServiceList" asChild>
+          <Link href="/ServiceList" asChild >
                 <Pressable>
                   {({ pressed }) => (
                     <FontAwesome 
@@ -76,7 +78,7 @@ export default function TabTwoScreen() {
 
         <View style={styles.row}>
           <View style={styles.item}>
-            <Link href="/ServiceList" asChild>
+            <Link href="/Report" asChild>
                   <Pressable>
                     {({ pressed }) => (
                       <MaterialIcons 
@@ -94,7 +96,7 @@ export default function TabTwoScreen() {
       </View>
       <View style={styles.footer}>
         <Text>Trabalhos Realizados este Mês: {monthJobs} </Text>
-        <Text>Ultimo Trabalho Realizado: {lastJob.product} - {lastJob.date}</Text>
+        <Text>Ultimo Trabalho Realizado: {lastJob === undefined ? "" : lastJob.product} - {lastJob === undefined ? "??/??/????" : lastJob.date}</Text>
       </View>
       {/* <View style={styles.row}>
         <View style={styles.item}>
