@@ -1,15 +1,10 @@
 import db from "./DB";
 
 
-db.transaction(tx =>{
-    // console.log("Iniciando a transaction;");
-    // tx.executeSql("DROP TABLE Pecas;", [],
-    // (tx, resultSet) =>{ console.log(`dropando a tabela:  ${JSON.stringify(resultSet)}`)},
-    // (tx, error) =>{ console.log(`Deu merda dropando a tabela: ${error}`)});
-    // console.log("passei aqui");
-    
+db.transaction(tx =>{    
+    // DropTable();
     tx.executeSql("CREATE TABLE IF NOT EXISTS Pecas(product TEXT not NULL, type INTEGER not null, prov TEXT not NULL, qtd INTEGER not null, date TEXT not null);", [],
-    (tx, resultSet) => { console.log(`Criando o banco`)},
+    (tx, resultSet) => {console.log(`Criando o banco: ${JSON.stringify(resultSet)}`)},
     (tx, error) => { console.log(`Deu merda criando o banco: ${error}`)})
     // console.log("e aqui tbm");
 
@@ -29,6 +24,14 @@ db.transaction(tx =>{
     // tx.executeSql("INSERT INTO Pecas (product, type, prov, qtd, date) VALUES (?, ?, ?, ?, ? );", ["PPR", 0, 1, 2, "7/08/2023"]);
     // tx.executeSql("INSERT INTO Pecas (product, type, prov, qtd, date) VALUES (?, ?, ?, ?, ? );", ["PPR", 0, 1, 2, "7/08/2023"]);
 });
+
+const DropTable = () =>{
+    db.transaction ( tx =>{
+        tx.executeSql("DROP TABLE Pecas;", [],
+        (tx, resultSet) =>{ console.log(`dropando a tabela:  ${JSON.stringify(resultSet)}`)},
+        (tx, error) =>{ console.log(`Deu merda dropando a tabela: ${error}`)});
+    })
+} 
 
 const Insert = (obj) =>{
     
@@ -86,14 +89,16 @@ const Delete = (id) =>{
     });
 }
 
-const SelectAll = new Promise( (resolve, reject) =>{
-    db.transaction(tx =>{
-        tx.executeSql("SELECT rowid, * FROM Pecas;", [],
-            (_, response) => resolve(response.rows._array),
-            (_, error) => reject(error)
-        )
-    })
-});
+const SelectAll = () =>{
+    return new Promise( (resolve, reject) =>{
+        db.transaction(tx =>{
+            tx.executeSql("SELECT rowid, * FROM Pecas;", [],
+                (_, response) => resolve(response.rows._array),
+                (_, error) => reject(error)
+            )
+        })
+    });
+}
 
 const GetByMonth = (month) =>{ 
     return new Promise( (resolve, reject) => {
@@ -105,26 +110,28 @@ const GetByMonth = (month) =>{
     });
 }
 
-const CountMonthJobs = 
-    new Promise ((resolve, reject) =>{
+const CountMonthJobs = () =>{
+    return  new Promise ((resolve, reject) =>{
         let date = new Date();
         let month = `${date.getMonth() + 1}/${date.getFullYear()}`;
         db.transaction(tx =>{
-            tx.executeSql(`SELECT count(*) as count from Pecas WHERE date LIKE "%${month}%"`, [],
+            tx.executeSql(`SELECT SUM(Pecas.qtd) as count from Pecas WHERE date LIKE "%${month}%"`, [],
                 (_, resultSet) => {resolve(resultSet.rows._array[0].count);},
                 (_, error) => {reject(error)}
             )
         })
-});
+    });
+}
 
-const GetLastJob = 
-    new Promise((resolve, reject) =>{
+const GetLastJob = () => {
+    return new Promise((resolve, reject) =>{
         db.transaction(tx =>{
             tx.executeSql("SELECT * FROM pecas ORDER BY rowid DESC LIMIT 1", [],
                 (_, resultSet) => {resolve(resultSet.rows._array[0])},
                 (_, error) => {reject(error)}
             )
         })
-});
+    });
+}
 
 export { Insert, SelectAll, CountMonthJobs, GetLastJob };

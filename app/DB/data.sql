@@ -7,9 +7,9 @@ CREATE TABLE IF NOT EXISTS pecas(
     date TEXT not null
 );
 
-SELECT rowid, * FROM pecas;
+SELECT rowid, * FROM pecas ORDER BY rowid DESC;
 
-SELECT count(*) from pecas WHERE date LIKE "%10/2023%";
+SELECT SUM(pecas.qtd) from pecas WHERE date LIKE "%10/2023%";
 
 SELECT * FROM pecas ORDER BY rowid DESC LIMIT 1;
 
