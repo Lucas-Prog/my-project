@@ -36,6 +36,13 @@ export default function TabLayout() {
           headerShown: true,
         }}
       />
+      <Stack.Screen 
+      name="Report"
+      options={{
+        title: "Gerar Relatório",
+        headerShown: true
+      }}
+      />
       <Stack.Screen
         name="ServiceList"
         options={{
